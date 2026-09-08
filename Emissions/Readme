@@ -1,1 +1,66 @@
  
+Annual-Average CMAP Emissions Analysis
+
+AnnualAverage_Renewal_Removal_EmissionsAnalysis_CMAP_Final_Shareable.ipynb compares annual on-road emissions across three fleet scenarios in the seven-county CMAP region:
+
+Baseline: LOCUS idling with the HDV spatial surrogate
+
+Accelerated renewal: pre-2010 trucks are replaced with model year 2022 trucks
+
+Legacy-truck removal: pre-2010 trucks and their associated activity are removed
+
+What the notebook does
+
+The notebook reads the annual-average gas and diesel emission shapefiles for each scenario, adds the fuel-specific emissions together, and clips the results to the CMAP counties. It then:
+
+calculates annual NOx emissions from gridded NO and NO2 in mol/s;
+
+calculates primary PM2.5 by summing the included particulate species in g/s;
+
+converts emissions to metric tons/km2/year using a 1.33 km grid-cell width;
+
+calculates total annual emissions for NOx, PM2.5, PEC, NH3, N2O, and CO2;
+
+compares accelerated renewal and legacy-truck removal with the baseline;
+
+separates the full legacy-truck contribution, the portion removed through renewal, and the portion remaining after renewal;
+
+compares gas and diesel contributions; and
+
+creates maps and summary bar plots for the manuscript and Supporting Information.
+
+The main scenario calculations are:
+
+Legacy-truck contribution: baseline - legacy-truck removal
+
+Removed through renewal: baseline - accelerated renewal
+
+Remaining after renewal: accelerated renewal - legacy-truck removal
+
+Required inputs
+
+Update the paths near the beginning of the notebook before running it.
+
+latlon_ChicagoLADCO_d03.nc: latitude and longitude for the 1.33 km CMAQ grid
+
+CMAP_cty.shp: boundaries for Cook, DuPage, Kane, Kendall, Lake, McHenry, and Will Counties
+
+Annual-average gas and diesel emission shapefiles for the baseline, accelerated-renewal, and zero-pre-2010 scenarios
+
+The analysis uses Python packages including numpy, pandas, geopandas, shapely, netCDF4, matplotlib, cartopy, and cmasher. The legacy-emissions mapping cell also uses matplotlib.ticker as mticker.
+
+Main outputs
+
+SI_Fig_Original_Base_Renewal_Removal_EmissionComparisons.pdf and .png: absolute annual NOx and PM2.5 emissions for all three scenarios
+
+SI_Legacy_Truck_Removed_Emissions.pdf and SI_Fig_Legacy_Truck_Removed_Emissions.png: NOx, PM2.5, and PEC emissions attributed to legacy trucks
+
+SI_Base_Renewal_Removal_EmissionComparisons.pdf and .png: baseline emissions and scenario changes for NOx and PM2.5
+
+emissions_summary: dataframe containing total, legacy-attributed, removed, and remaining emissions by pollutant
+
+Displayed bar plots showing the legacy share of total emissions and percent changes under accelerated renewal
+
+Notes
+
+The annualization assumes 8,760 hours per year, and the gridded calculations assume a uniform 1.33 km by 1.33 km cell area. Run the notebook from top to bottom so the scenario GeoDataFrames, conversion functions, and plotting settings are defined before the summary and figure cells.
