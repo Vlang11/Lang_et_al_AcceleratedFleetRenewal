@@ -1,1 +1,62 @@
- 
+ # CMAP Health and Exposure Calculations
+
+`Annualized_IdlingOnroadMod_Renewal_ZeroPre2010s_CTExposure_CMAP_v0.ipynb` calculates census-tract exposure and premature mortality across the seven-county CMAP region for three fleet scenarios:
+
+- **Baseline:** LOCUS idling with the HDV spatial surrogate
+- **Accelerated renewal:** pre-2010 trucks are replaced with model year 2022 trucks
+- **Legacy-truck removal:** pre-2010 trucks and their associated activity are removed
+
+## What the notebook does
+
+The notebook combines annual-average CMAQ concentrations, census-tract demographics, and baseline mortality rates. I use it to:
+
+- calculate population-weighted exposure to NO2, PM2.5, EC, and MDA8 O3;
+- compare exposure for the total population and White, Black, Hispanic, Asian, and Other populations;
+- calculate relative exposure as the subgroup population-weighted concentration divided by the domain-wide value;
+- calculate absolute disparities as the subgroup value minus the domain-wide value;
+- group tracts into concentration deciles and compare their racial and ethnic composition;
+- estimate pollutant-attributable premature mortality for each scenario; and
+- separate the full legacy-truck burden, the portion removed through renewal, and the burden remaining after renewal.
+
+The main scenario calculations are:
+
+- **Legacy-truck attributable:** baseline - legacy-truck removal
+- **Removed through renewal:** baseline - accelerated renewal
+- **Remaining after renewal:** accelerated renewal - legacy-truck removal
+
+## Health calculations
+
+Age-specific population counts are combined with tract-level all-cause baseline mortality rates to estimate baseline deaths. The notebook then applies pollutant-specific concentration-response functions for NO2, total PM2.5, EC, and O3:
+
+`AF = 1 - exp(-beta x concentration)`
+
+`Attributable deaths = baseline deaths x AF`
+
+Central, lower, and upper beta estimates are used to calculate the mean and 95% confidence interval. O3 mortality is calculated using both the WHO and Turner et al. (2016) functions, although the final health figure uses the Turner et al. estimate. Mortality changes are calculated as renewal minus baseline and legacy-truck removal minus baseline, with final figure values rounded to the nearest 10 deaths.
+
+## Required inputs
+
+Update the file paths near the beginning of the notebook before running it.
+
+- `latlon_ChicagoLADCO_d03.nc`: CMAQ grid coordinates
+- `CMAP_cty.shp`: boundaries for the seven CMAP counties
+- `tl_2016_us_primaryroads.shp`: primary-road layer used for mapping
+- Annual-average census-tract concentration shapefiles for the baseline, accelerated-renewal, and zero-pre-2010 scenarios
+- Annual-average census-tract MDA8 O3 shapefiles for all three scenarios
+- `nhgis0011_ds267_20235_tract.csv`: 2019-2023 ACS demographic data from NHGIS
+- `cmap_census_tracts2018.shp`: census-tract geometries
+- `BenMAP_Ready_USALEEP_AllCauseRates_OriginalYears.csv`: tract-level, age-specific all-cause baseline mortality rates
+
+Air-quality, demographic, and mortality records are joined using `GEOID` or `GISJOIN`, depending on the calculation. Check that identifiers retain their leading zeros before merging.
+
+## Main outputs
+
+- `mortality_summary`: scenario-specific mortality estimates, scenario differences, confidence intervals, and values rounded to the nearest 10
+- `no2_summary`, `pm25_tot_summary`, `pm25_ec_summary`, and `O3_summary`: population-weighted exposure and disparity results by population group
+- `Multipollutant_Exposure_Deciles_RaceEthnicity_3x4.pdf`: racial and ethnic composition across exposure deciles for all pollutants and scenarios
+- `Fig3_AcceleratedFleetRenewal_HealthBenefits_Tradeoffs.png` and `.pdf`: combined mortality and population-weighted exposure figure
+
+## Notes
+
+Run the notebook from top to bottom because later figures use dataframes created during the health and exposure calculations. The analysis uses `numpy`, `pandas`, `geopandas`, `shapely`, `netCDF4`, `matplotlib`, and `cartopy`.
+
