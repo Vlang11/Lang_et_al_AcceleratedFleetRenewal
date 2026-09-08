@@ -1,1 +1,53 @@
+# Gridded CMAQ Concentration Comparisons
+
+This directory contains the notebooks I use to compare modeled air pollution under the baseline, accelerated fleet-renewal, and legacy-truck-removal scenarios across the seven-county CMAP region.
+
+The analysis focuses on NO2, total PM2.5, EC, and MDA8 O3. Several sections also evaluate NO, NOx, NH3, primary- and secondary-associated PM2.5, VOC:NOx ratios, and oxidant chemistry.
+
+## Scripts
+
+### `Seasonal_Renewal_Baseline_GriddedComparison_CMAP_v0.ipynb`
+
+Compares the baseline and accelerated fleet-renewal scenarios for January, April, July, and October 2023. The notebook clips the gridded CMAQ results to the CMAP counties and maps baseline concentrations, renewal concentrations, absolute changes, and percent changes. It also separates primary- and secondary-associated PM2.5.
+
+### `Annualized_Renewal_ZeroPre2010s_IdlingOnRoadMod_GriddedComparison_CMAP_v1.ipynb`
+
+Compares the four-month annualized averages for the baseline, accelerated-renewal, and zero-pre-2010 scenarios. The notebook maps absolute concentrations and scenario differences for the main pollutants and includes additional diagnostics for NOx, NH3, VOC:NOx, HOx, OH, H2O2, O3, and secondary PM2.5 species. It also calculates the fraction of the legacy-truck concentration contribution removed through accelerated renewal.
+
+### `Seasonal_Renewal_Zeropre2010s_baseline_griddedconcentrations.ipynb`
+
+Extends the seasonal comparison to include both accelerated renewal and complete legacy-truck removal. It creates monthly and pollutant-specific panels showing the baseline, scenario concentration, scenario minus baseline, and percent difference from baseline.
+
+## Scenario definitions
+
+- **Baseline:** LOCUS idling with the HDV spatial surrogate
+- **Accelerated renewal:** pre-2010 trucks are replaced with model year 2022 trucks
+- **Legacy-truck removal or zero pre-2010:** pre-2010 trucks and their associated activity are removed
+
+Scenario differences are calculated as scenario minus baseline. Negative values represent concentration reductions, while positive values represent increases.
+
+## Required inputs
+
+Update the file paths near the beginning of each notebook before running it.
+
+- `latlon_ChicagoLADCO_d03.nc`: latitude and longitude for the CMAQ grid
+- `CMAP_cty.shp`: boundaries for the seven CMAP counties
+- `tl_2016_us_primaryroads.shp`: primary-road layer used for mapping
+- ACONC shapefiles for the baseline, accelerated-renewal, and zero-pre-2010 scenarios
+- MDA8 O3 shapefiles for each scenario
+- VOC shapefiles used in the annualized VOC:NOx analysis
+
+The seasonal notebooks use January, April, July, and October as representative months. The annualized notebook uses the four-month average rather than a continuous 12-month simulation.
+
+## Outputs
+
+The notebooks create PNG and PDF figures for:
+
+- seasonal and annualized concentration comparisons;
+- absolute and percent differences from baseline;
+- primary- and secondary-associated PM2.5;
+- legacy-truck-attributable concentrations and the fraction removed through renewal; and
+- VOC:NOx, oxidant, and secondary aerosol responses.
+
+Run each notebook from top to bottom because later plotting cells use clipped GeoDataFrames and functions created earlier in the notebook. The main Python packages are `numpy`, `geopandas`, `matplotlib`, `cartopy`, `netCDF4`, and `cmasher`.
  
